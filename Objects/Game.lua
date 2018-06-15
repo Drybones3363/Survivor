@@ -2,6 +2,9 @@
 
 local Player = require("Objects/Player")
 
+local FirstNames = require("Data/FirstNames")
+local LastNames = require("Data/LastNames")
+
 local json = require("Libraries/json")
 
 local Game = {}
@@ -18,6 +21,8 @@ function Game.new(data)
 	if not data then
 		data = {}
 	end
+	setmetatable(ret,Game)
+	Game.__index = Game
 
 	for i,k in pairs (Default_Data) do
 		if not data[i] then
@@ -28,7 +33,26 @@ function Game.new(data)
 	ret.GameData = {}
 	ret.GameData.Players = {}
 	for i=1,data.numPlayers do
-		table.insert(ret.GameData.Players,Player.new())
+		local playerData = {Gender = (i%2 == 0 and "Male" or "Female")}
+		local player = Player.new(playerData)
+		table.insert(ret.GameData.Players,player)
+	end
+
+	local nameHashTable = {}
+	for i=1,#ret.GameData.Players do
+		local player = ret.GameData.Players[i]
+		local gender = player:getGender()
+		local firstNamesTable = FirstNames[gender]
+		local first,last
+		repeat
+			first = firstNamesTable[math.random(#firstNamesTable)]
+			last = LastNames[math.random(#LastNames)]
+		until nameHashTable[first] == nil and nameHashTable[last] == nil --..last
+		nameHashTable[first] = true --..last
+		nameHashTable[last] = true
+		player:setFirstName(first)
+		player:setLastName(last)
+		print(first,last)
 	end
 
 	return ret

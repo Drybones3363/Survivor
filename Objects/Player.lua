@@ -27,10 +27,15 @@ local Default_Data = {
 		Popularity = 50,
 		Control = 50,
 	},
+	FirstName = "Adam",
+	LastName = "Galauner",
+	Gender = "Male"
 }
 
 function Player.new(data)
 	local ret = {}
+	setmetatable(ret,Player)
+	Player.__index = Player
 
 	local function updateData(t,copy)
 		if not t then
@@ -51,10 +56,23 @@ function Player.new(data)
 	end
 	data = updateData(data,Default_Data)
 
-	local stats = data.Stats
-	ret.Stats = stats
+	for i,k in pairs (data) do
+		ret[i] = k
+	end
 
 	return ret
+end
+
+function Player:setFirstName(name)
+	self.FirstName = name
+end
+
+function Player:setLastName(name)
+	self.LastName = name
+end
+
+function Player:getGender()
+	return self.Gender
 end
 
 return Player

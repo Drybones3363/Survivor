@@ -1,8 +1,10 @@
 return {
 	Male = {
-		"Adam"
+		"Adam","Aaron","James","Ozzy","Chicken","Todd","Terry","Dan","Tom","Ethan",
+		"Donald",
 	},
 	Female = {
-		"Emma"
+		"Emma","Amanda","Parvati","Courtney","Denise","Kim","Melinda","Cerie",
+		"Mary","Danielle","Ruth","Kathy","Renee","Maya"
 	}
 }
