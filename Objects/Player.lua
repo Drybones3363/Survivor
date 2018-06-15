@@ -5,7 +5,9 @@ local LastNames = require("Data/LastNames")
 
 local Player = {}
 
-
+Player.__tostring = function(self)
+	return self.FirstName --.." "..self.LastName
+end
 
 
 function clonet(t)
@@ -22,15 +24,57 @@ end
 
 
 local Default_Data = {
-	Stats = {
+	--[[Stats = {
 		Strength = 50,
 		Popularity = 50,
 		Control = 50,
-	},
+		Intelligence = 50,
+	},--]]
 	FirstName = "Adam",
 	LastName = "Galauner",
-	Gender = "Male"
+	Gender = "Male",
+	Health = 50
 }
+
+local getStat = {
+	Strength = function(gender)
+		local rand = math.random()
+		if gender == "Male" then
+			return 100*(rand^.35)
+		else
+			return 100*(rand^1.75)
+		end
+	end,
+	Popularity = function(gender)
+		local rand = math.random()
+		return 100*(rand^.5)
+	end,
+	Control = function(gender)
+		local rand = math.random()
+		if gender == "Male" then
+			return 100*(rand^.75)
+		else
+			return 100*(rand)
+		end
+	end,
+	Intelligence = function(gender)
+		local rand = math.random()
+		if gender == "Male" then
+			return 100*(rand^.65)
+		else
+			return 100*(rand^.4)
+		end
+	end,
+}
+
+
+function getRandomStats(gender)
+	local ret = {}
+	for i,k in pairs (getStat) do
+		ret[i] = math.ceil(k(gender))
+	end
+	return ret
+end
 
 function Player.new(data)
 	local ret = {}
@@ -56,10 +100,14 @@ function Player.new(data)
 	end
 	data = updateData(data,Default_Data)
 
+	if not data.Stats then
+		data.Stats = getRandomStats(data.Gender)
+	end
+
+
 	for i,k in pairs (data) do
 		ret[i] = k
 	end
-
 	return ret
 end
 
@@ -73,6 +121,26 @@ end
 
 function Player:getGender()
 	return self.Gender
+end
+
+function Player:getTribe()
+	return self.Tribe
+end
+
+function Player:setTribe(tribeName)
+	self.Tribe = tribeName
+end
+
+function Player:getStats()
+	return self.Stats
+end
+
+function Player:getVote(tribe)
+	local index
+	repeat
+		index = math.random(#tribe)
+	until tribe[index] ~= self or #tribe == 1
+	return tribe[index]
 end
 
 return Player
