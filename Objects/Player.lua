@@ -1,6 +1,10 @@
+
+
+local FirstNames = require("Data/FirstNames")
+local LastNames = require("Data/LastNames")
+
 local Player = {}
 
-Player.__index = Player
 
 
 
@@ -49,7 +53,7 @@ function Player.new(data)
 
 	local stats = data.Stats
 	ret.Stats = stats
-	
+
 	return ret
 end
 
