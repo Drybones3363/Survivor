@@ -33,7 +33,8 @@ local Default_Data = {
 	FirstName = "Adam",
 	LastName = "Galauner",
 	Gender = "Male",
-	Health = 50
+	Health = 50,
+	Friendships = {},
 }
 
 local getStat = {
@@ -74,6 +75,17 @@ function getRandomStats(gender)
 		ret[i] = math.ceil(k(gender))
 	end
 	return ret
+end
+
+function nameSpacing(name)
+	local s = (function()
+		local ret = ""
+		for i=16,name:len(),-1 do
+			ret = ret.." "
+		end
+		return ret
+	end)()
+	return name..s
 end
 
 function Player.new(data)
@@ -119,6 +131,10 @@ function Player:setLastName(name)
 	self.LastName = name
 end
 
+function Player:getSpacedName()
+	return nameSpacing(self.FirstName)
+end
+
 function Player:getGender()
 	return self.Gender
 end
@@ -135,12 +151,56 @@ function Player:getStats()
 	return self.Stats
 end
 
+function Player:initFriendships(players)
+	for i,plr in pairs (players) do
+		if plr ~= self then
+			local sameTribe = plr:getTribe() == self.Tribe
+			self.Friendships[plr] = math.random(50) + (sameTribe and 50 or 0)
+		end
+	end
+end
+
+function Player:printTribeFriendships()
+	local strings = {"hates","dislikes","cannot trust","likes","trusts"}
+	local values = {10,33,66,90}
+	for plr,val in pairs (self.Friendships) do
+		if plr:getTribe() == self.Tribe then
+			local printed = false
+			for i=1,#values do
+				if val <= values[i] then
+					print(tostring(self).." "..strings[i].." "..tostring(plr).." ("..val..")")
+					printed = true
+					break
+				end
+			end
+			if not printed then
+				print(tostring(self).." "..strings[#strings].." "..tostring(plr).." ("..val..")")
+			end
+		end
+	end
+end
+
+function Player:getLeastLiked(players)
+	local ret
+	local min = math.huge
+	for i,plr in pairs (players) do
+		if plr ~= self then
+			if self.Friendships[plr] <= min then
+				ret = plr
+				min = self.Friendships[plr]
+			end
+		end
+	end
+	return ret
+end
+
 function Player:getVote(tribe)
-	local index
-	repeat
-		index = math.random(#tribe)
-	until tribe[index] ~= self or #tribe == 1
-	return tribe[index]
+	return self:getLeastLiked(tribe)
+	-- local index
+	-- repeat
+	-- 	index = math.random(#tribe)
+	-- until tribe[index] ~= self or #tribe == 1
+	-- return tribe[index]
 end
 
 return Player

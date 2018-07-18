@@ -73,6 +73,7 @@ function Game.new(data)
 	end
 
 	ret.GameData = {}
+	ret.GameData.AllPlayers = {}
 	ret.GameData.Tribes = {}
 	for i,k in pairs (tribesIndex) do
 		ret.GameData.Tribes[k] = {}
@@ -97,7 +98,12 @@ function Game.new(data)
 		playerData.Stats = PlayerStats[first.." "..last]
 		local player = Player.new(playerData)
 
+		table.insert(ret.GameData.AllPlayers,player)
 		table.insert(ret.GameData.Tribes[tribeName],player)
+	end
+
+	for i,plr in pairs (ret.GameData.AllPlayers) do
+		plr:initFriendships(ret.GameData.AllPlayers)
 	end
 
 	ret.GameData.Day = 0
@@ -119,6 +125,14 @@ function Game:showIntro(quick)
 		if not quick then wait(1) end
 		print("")
 		if not quick then wait(1) end
+	end
+end
+
+function Game:findPlayer(playerName)
+	for i,plr in pairs (self.GameData.AllPlayers) do
+		if tostring(plr) == playerName then
+			return plr
+		end
 	end
 end
 
@@ -166,10 +180,12 @@ function Game:simulateVote(tribeName,ignorePlayers,revote)
 	end
 	print("I'll go tally the votes")
 	wait(3)
-	print("If anyone has a hidden immunity idol and you would like to play it,")
-	wait(2)
-	print("now would be the time to do so.")
-	wait(4)
+	if not revote then
+		print("If anyone has a hidden immunity idol and you would like to play it,")
+		wait(2)
+		print("now would be the time to do so.")
+		wait(4)
+	end
 	print("Alright, once the votes are read, the decision is final.")
 	wait(2)
 	print("The person voted out will be asked to leave the council area immediately.")
@@ -226,6 +242,7 @@ function Game:simulateVote(tribeName,ignorePlayers,revote)
 						if r == first then
 							ignore[plr] = true
 							print(tostring(plr).." will not vote.")
+							wait(1.5)
 						end
 					end
 					self:simulateVote(tribeName,ignore,true)
@@ -247,21 +264,19 @@ function Game:simulateVote(tribeName,ignorePlayers,revote)
 			break
 		end
 	end
-	if successfulVote == false and oldNum == #self.GameData.VotedOut then
+	if successfulVote == false and oldNum == #self.GameData.VotedOut and not revote then
 		print("We have to draw rocks...")
 	else
 		wait(5)
 		print("Vote Outcome: ")
 		for i,k in pairs (voteData) do
 			wait(1.5)
-			print(tostring(i).."\t\t\t"..tostring(k))
+			print(i:getSpacedName().."\t"..tostring(k))
 		end
 	end
-
-
 end
 
-function Game:tribeMerge(tribe1,tribe2)
+function Game:mergeTribes(tribe1,tribe2)
 
 end
 
