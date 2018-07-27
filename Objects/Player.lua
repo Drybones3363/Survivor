@@ -77,10 +77,10 @@ function getRandomStats(gender)
 	return ret
 end
 
-function nameSpacing(name)
+local function nameSpacing(name)
 	local s = (function()
 		local ret = ""
-		for i=16,name:len(),-1 do
+		for _=16,name:len(),-1 do
 			ret = ret.." "
 		end
 		return ret
@@ -151,6 +151,12 @@ function Player:getStats()
 	return self.Stats
 end
 
+function Player:printStats()
+	for i,k in pairs (self:getStats()) do
+		print(i,k)
+	end
+end
+
 function Player:initFriendships(players)
 	for i,plr in pairs (players) do
 		if plr ~= self then
@@ -194,6 +200,20 @@ function Player:getLeastLiked(players)
 	return ret
 end
 
+function Player:getMostLiked(players)
+	local ret
+	local max = 0
+	for i,plr in pairs (players) do
+		if plr ~= self then
+			if self.Friendships[plr] >= max then
+				ret = plr
+				max = self.Friendships[plr]
+			end
+		end
+	end
+	return ret
+end
+
 function Player:getVote(tribe)
 	return self:getLeastLiked(tribe)
 	-- local index
@@ -202,5 +222,10 @@ function Player:getVote(tribe)
 	-- until tribe[index] ~= self or #tribe == 1
 	-- return tribe[index]
 end
+
+function Player:getJuryVote(tribe)
+	return self:getMostLiked(tribe)
+end
+
 
 return Player

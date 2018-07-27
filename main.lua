@@ -3,11 +3,9 @@ local Player = require("Objects/Player")
 local Game = require("Objects/Game")
 
 
-local p = Player.new()
-
 math.randomseed(os.time())
 
-function stringSplit(str)
+local function stringSplit(str)
 	local ret = {}
 	for i in string.gmatch(str, "%S+") do
 		table.insert(ret,i)
@@ -15,7 +13,7 @@ function stringSplit(str)
 	return ret
 end
 
-function main()
+local function main()
 	local g = Game.new()
 
 	io.write("\nSurvivor Season Started\n\n")
@@ -30,15 +28,20 @@ function main()
 		elseif input:sub(1,8) == "friends " then
 			local playerName = input:sub(9)
 			g:findPlayer(playerName):printTribeFriendships()
+		elseif input:sub(1,6) == "stats " then
+			local playerName = input:sub(7)
+			g:findPlayer(playerName):printStats()
 		elseif input:sub(1,5) == "save " then
 			g:save(input:sub(6))
 		elseif input == "intro" then
 			g:showIntro(true)
+		elseif input == "day" then
+			g:simulateDay()
 		elseif input == "slow intro" then
 			g:showIntro()
-		elseif input:sub(1,5) == "merge " then
-			local t = stringSplit(input:sub(6))
-			g:mergeTribes(t[1],t[2])
+		elseif input:sub(1,5) == "merge" then
+			--local t = stringSplit(input:sub(6))
+			g:mergeTribes()
 		elseif input:sub(1,14) == "switch tribes " then
 			local n = tonumber(input:sub(6))
 			g:mixTribes(n)

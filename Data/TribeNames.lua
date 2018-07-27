@@ -4,5 +4,6 @@ return {
 	"Jalapao",
 	"Rotu",
 	"Mahi",
-	"Zulu"
+	"Zulu",
+	"Casaya",
 }
